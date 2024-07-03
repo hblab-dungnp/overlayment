@@ -7,12 +7,12 @@ import 'package:overlayment/src/controllers/notification_controller.dart';
 import '../types/overlay_base.dart';
 
 class OverlaysController {
-  final _requests = <_OverlayRequest>[];
+  final _requests = <OverlayRequest>[];
 
   int get length => _requests.length;
 
   Future<T?> add<T>(OverlayState overlayState, OverlayBase overlay) async {
-    final request = _OverlayRequest<T>(overlay);
+    final request = OverlayRequest<T>(overlay);
     _requests.add(request);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       overlayState.insertAll(request.overlayEntries());
@@ -25,7 +25,7 @@ class OverlaysController {
     return request.completer.future;
   }
 
-  Future<T?> _dismiss<T>(_OverlayRequest request, {T? result}) async {
+  Future<T?> _dismiss<T>(OverlayRequest request, {T? result}) async {
     if (await request.cleanup(result: result)) {
       if (_requests.contains(request)) _requests.remove(request);
     }
@@ -53,8 +53,16 @@ class OverlaysController {
     }
   }
 
+  bool any(bool Function(OverlayRequest<dynamic>) query) {
+    return _requests.any(query);
+  }
+
+  bool anyName(String name) {
+    return _requests.any((e) => e.overlay.name == name);
+  }
+
   Future<T?> _findAndDismiss<T>(
-    bool Function(_OverlayRequest<dynamic>) query, {
+    bool Function(OverlayRequest<dynamic>) query, {
     T? result,
   }) {
     if (_requests.any(query)) {
@@ -64,12 +72,12 @@ class OverlaysController {
   }
 }
 
-class _OverlayRequest<T> {
+class OverlayRequest<T> {
   final OverlayBase overlay;
   final completer = Completer<T?>();
   bool mounted = true;
   Timer? timer;
-  _OverlayRequest(this.overlay);
+  OverlayRequest(this.overlay);
 
   final _overlayEntries = <OverlayEntry>[];
 

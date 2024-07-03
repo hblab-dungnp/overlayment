@@ -44,6 +44,13 @@ class OverlaymentContext {
     return _controller.dismissAll<T>(result: result, atSameTime: atSameTime);
   }
 
+  /// Find an overlay with [Name]
+  bool anyName(String name) => _controller.anyName(name);
+
+  /// Find an overlay with [Query]
+  bool any(bool Function(OverlayRequest<dynamic>) query) =>
+      _controller.any(query);
+
   /// Show a quick Messages in your app.
   /// this method will show the message as bottom panel on small screen
   /// and as notification on big screen.
