@@ -166,13 +166,13 @@ class OverWindow with OverlayBase {
 
     if (position != null) {
       if (size == null) return position!;
-
-      var xPercent = position!.dx / screen.width;
-      var yPercent = position!.dy / screen.height;
-      return Offset(
-        position!.dx - size.width * xPercent,
-        position!.dy - size.height * yPercent,
-      );
+      if (screen.width - (size.width + position!.dx) < 0) {
+        return Offset(screen.width - size.width, position!.dy);
+      }
+      if (position!.dx - (size.width) < 0) {
+        return Offset(0, position!.dy);
+      }
+      return position!;
     }
 
     size = size ?? const Size(0, 0);
